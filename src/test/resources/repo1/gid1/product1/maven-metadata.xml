@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<metadata>
+  <groupId>gid1</groupId>
+  <artifactId>product1</artifactId>
+  <version>1.0.0</version>
+  <versioning>
+    <release>1.0.0</release>
+    <versions>
+      <version>1.0.0-alpha</version>
+      <version>1.0.0-beta</version>
+      <version>1.0.0-rc</version>
+      <version>1.0.0</version>
+    </versions>
+    <lastUpdated>20120118074248</lastUpdated>
+  </versioning>
+</metadata>
