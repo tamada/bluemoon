@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project name="BlueMoon">
+  <body>
+    <menu name="BlueMoon" inherit="top">
+      <item name="Introduction"       href="/index.html"/>
+      <item name="Getting Start"      href="/start.html" />
+      <item name="Configuration"      href="/config.html"/>
+      <item name="Download"           href="/download.html" />
+    </menu>
+    <menu ref="reports" />
+  </body>
+</project>

@@ -1,0 +1,57 @@
+ ----
+ BlueMoon: Getting Started
+ ----
+ Haruaki Tamada
+ ----
+ 2009-05-26
+ ----
+
+Getting Started
+
+*Java環境の確認
+
+ BlueMoonはJava SE 6もしくはそれ以上のバージョンのJavaが必要です．Javaを
+まだインストールしていない人は {{http://java.sun.com/}}から JDK をダウ
+ンロード，インストールしてください．
+
+*BlueMoonを利用するアプリケーションの設定
+
+ BlueMoonは単体で動くアプリケーションではありません．他のアプリケーショ
+ンに組み込んで使うAPIです．オンラインアップデートを使いたいアプリケー
+ションを選択してください．
+
+ BlueMoonを適用するアプリケーションが選択できたら， Webサイトから
+BlueMoonをダウンロードし，ハードディスクの適当な場所に展開します．
+
+*BlueMoonの設定ファイルを作成
+
+ 検索するリポジトリや依存ライブラリを設定ファイルに書く必要があります．
+{{{config.html}Configuration}}を見て，自分でxmlファイルを書いても良い
+のですが，bluemoon-x.x.x.jar をダブルクリックすると設定ファイル作成のGUI
+ツールが起動します．
+
+ このGUIツールで検索するMaven2のリポジトリの場所を指定し，自動アップデー
+トしたいライブラリの名前をdependenciesに指定します．そして，もし，手動
+でアップデートを管理したいライブラリがあれば，Ignoresにその名前を追加
+します．以上の作業の後，Saveボタンを押し，適当な場所に設定ファイルを保
+存します．
+
+[images/screenshot.png] Screen shot of BlueMoon Context Builder
+
+*アプリケーションの修正
+
+ アプリケーションにBlueMoonを使うためのコードを追加します．アップデートの
+進捗状況を知りたい場合は
+{{{apidocs/com/github/bluemoon/BlueMoonListener.html}BlueMoonListener}}
+を使うことができます．
+
+----
+BlueMoonContextParser parser = new BlueMoonContextParser();
+BlueMoonContext context = parser.parse(new File("/path/to/config/file"));
+BlueMoon bluemoon = new BlueMoon(context);
+if(bluemoon.canUpdate()){
+    bluemoon.update();     // this method is blocked while downloading files.
+    BlueMoonContextExporter exporter = new BlueMoonContextExporter();
+    exporter.export(new File("/path/to/config/file"), context);
+}
+----

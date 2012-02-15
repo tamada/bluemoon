@@ -1,0 +1,21 @@
+ ----
+ BlueMoon: Online update API
+ ----
+ Haruaki Tamada
+ ----
+ 2007-07-08
+ ----
+
+Example
+
+*List deployed libraries
+
+----
+BlueMoon bluemoon = BlueMoon.getInstance();
+Repository repository = bluemoon.findRepository("http://....");
+
+for(Iterator<Item> i = repository.list(); i.hasNext(); ){
+    Item item = i.next();
+    // some operation...
+}
+----

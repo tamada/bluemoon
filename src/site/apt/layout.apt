@@ -1,0 +1,26 @@
+ ----
+ BlueMoon: Repository layout
+ ----
+ Haruaki Tamada
+ ----
+ 2007-07-08
+ ----
+
+Repository Layouts
+
+----
+ Root
+  |
+  +- groupId1 -+- artifactId1 -+- version1 -+- archive1.jar
+  |            |               |            +- archive2.jar
+  |            |               |
+  |            |               +- version2 -+- archive1.jar
+  |            |                            +- archive2.jar
+  |            |
+  |            +- artifactId2 -+- version1 -+- archive1.jar
+  |
+  +- groupId2 -+- artifactId1 -+- version1 -+- archive1.jar
+     :
+----
+
+ Layout of BlueMoon's repository is described as above.

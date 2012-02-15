@@ -1,0 +1,205 @@
+ ----
+ BlueMoon: Configuration
+ ----
+ Haruaki Tamada
+ ----
+ 2009-05-21
+ ----
+
+bluemoon.xml
+
+ Example of bluemoon.xml is as follows.  The file name is not restricted
+to `bluemoon.xml,' any name is acceptable.
+
+----
+<?xml version="1.0" encoding="utf-8"?>
+
+<blue-moon>
+  <!-- default is both (local_only and remote_only) -->
+  <repository-scope>both</repository-scope>
+  <!-- default is compile and runtime. -->
+  <dependency-scope>
+    compile, runtime
+  </dependency-scope>
+  <updating-policy>DESTINATION_CHECK</updating-policy>
+  <repositories>
+    <repository>
+      <id>central</id>
+      <name>Maven2 Central Repository</name>
+      <url>http://repo1.maven.org/maven2/</url>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.github</groupId>
+      <artifactId>bluemoon</artifactId>
+      <version>1.0</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+
+<!--
+  <ignores>
+    <ignore>
+      <groupId></groupId>
+      <artifactId></artifactId>
+    </ignore>
+  </ignores>
+-->
+</blue-moon>
+----
+
+Relax NG
+
+ Grammer of bluemoon.xml in Relax NG.
+
+----
+<grammer mlns="http://relaxng.org/ns/structure/1.0" 
+         datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <start>
+    <ref name="blue-moon" />
+  </start>
+
+  <!-- top level tag. -->
+  <define name="blue-moon">
+    <element name="blue-moon">
+      <interleave>
+        <ref name="repository-scope"/>
+        <ref name="destination"/>
+        <ref name="updating-policy"/>
+        <ref name="dependency-scope"/>
+        <ref name="repositories"/>
+        <ref name="dependencies" />
+        <ref name="ignores">
+      </interleave>
+    </element>
+  </define>
+
+  <!-- BlueMoon がどこのリポジトリを参照するのかを設定する． -->
+  <define name="repository-scope">
+    <optional>
+      <element name="repository-scope">
+        <choice>
+          <value>LOCAL_ONLY</value>
+          <value>REMOTE_ONLY</value>
+          <value>BOTH</value>
+        </choice>
+      </element>
+    </optional>
+  </define>
+
+  <!-- BlueMoon がライブラリを更新するときに，更新の必要があるのかをチェックする対象を設定する．-->
+  <define name="updating-policy">
+    <optional>
+      <element name="updating-policy">
+        <choice>
+          <!-- 
+              最新バージョンと指定されたバージョンの依存関係を
+              リポジトリを対象にしてそれぞれ調べ，
+              新しいバージョンがあったもののみを更新する．
+          -->
+          <value>REPOSITORY_CHECK</value>
+          <!--
+            最新バージョンの依存関係を調べ，対象ディレクトリに
+            当該バージョンが存在しない場合に更新する
+          -->
+          <value>DESTINATION_CHECK</value>
+          <!-- 最新バージョンの依存関係を調べ，全て更新する．-->
+          <value>NO_CHECK</value>
+        </choice>
+      </element>
+    </optional>
+  </define>
+
+  <!-- BlueMoon がライブラリを保存するディレクトリ． -->
+  <define name="destination">
+    <optional>
+      <element name="destination"><text/></element>
+    </optional>
+  </define>
+
+  <!--
+    依存関係の定義のうち，更新するスコープを指定する．
+    このタグが指定されなければ COMPILE, RUNTIME が指定されたものとする．
+  -->
+  <define name="dependency-scope">
+    <optional>
+      <element name="dependency-scope">
+        <list>
+          <interleave>
+            <value>compile</value>
+            <value>provided</value>
+            <value>runtime</value>
+            <value>test</value>
+            <value>system</value>
+          </interleave>
+        </list>
+      </element>
+    </optional>
+  </define>
+
+  <!-- 検索するMaven2のリポジトリのリスト． -->
+  <define name="repositories">
+    <element name="repositories">
+      <oneOrMore>
+        <ref name="repository">
+      </oneOrMore>
+    </element>
+  </define>
+
+  <!-- 検索するMaven2のリポジトリ． -->
+  <define name="repository">
+    <element name="repository">
+      <element name="id"><text/></element>
+      <element name="name"><text/></element>
+      <element name="url"><text/></element>
+    </element>
+  </define>  
+
+  <!-- 更新したいライブラリのリスト -->
+  <define name="dependencies">
+    <element name="dependency">
+      <oneOrMore>
+        <ref name="dependency" />
+      </oneOrMore>
+    </element>
+  </define>
+
+  <!-- 更新したいライブラリの定義． -->
+  <define name="dependency">
+    <element name="dependency">
+      <element name="groupId"><text/></element>
+      <element name="artifactId"><text/></element>
+      <element name="version"><text/></element>
+      <optional>
+        <element name="scope">
+          <choice>
+            <value>compile</value>
+            <value>provided</value>
+            <value>runtime</value>
+            <value>test</value>
+            <value>system</value>
+          </choice>
+        </element>
+      </optional>
+    </element>
+  </define>
+
+  <!-- 更新したいライブラリの依存関係のうち，無視したいライブラリがあれば，ここで指定する． -->
+  <define name="ignores">
+    <element name="ignores">
+      <oneOrMore>
+        <ref name="ignore"/>
+      </oneOrMore>
+    </element>
+  </define>
+
+  <define name="ignore">
+    <element name="ignore">
+      <element name="groupId"><text/></element>
+      <element name="artifactId"><text/></element>
+    </element>
+  </define>
+</grammer>
+----

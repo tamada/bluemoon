@@ -1,0 +1,95 @@
+ ----
+ BlueMoon: Network updating API
+ ----
+ Haruaki Tamada
+ ----
+ 2009-05-21
+ ----
+
+{Overview}
+
+ BlueMoonはアプリケーションの依存ライブラリをMavenのリポジトリを利用してアップデートするためのAPIです．以下の操作が可能です．
+
+ * 指定したライブラリに新規バージョンがあるのか，指定したMavenのリポジトリで検索可能．
+
+ * 新規バージョンが見つかれば，それをダウンロードし，指定した場所に置ける．
+
+ * もし，ダウンロードしたなライブラリに新たな依存ライブラリがあったとき，それらも自動的にダウンロードできる．
+
+ []
+
+ 最近 依存ライブラリを解決するために Maven のリポジトリを利用するプロジェクトが増えています．
+{{{http://ant.apache.org/}Apache Ant}} のサブプロジェクト
+{{{http://ant.apache.org/ivy/}Ivy}}や
+{{{http://d.hatena.ne.jp/t_yano/20071217/1197911774}mvnbeans}} などがその代表例でしょう．
+
+ しかし，そのほとんどがビルドを目的としており，実行時にダウンロード，
+インストールするものは寡聞ながら知りません．
+Ivyやmvnbeansを実行時に動かすのもトリッキーな感じになりそうです．
+それくらいなら1から作ってしまえということで，作ったのがこのBlueMoonです．
+
+ このBlueMoonはオンラインアップデートを目的としているため，
+Mavenのローカルリポジトリにライブラリをインストールすることや，
+Mavenのリモートリポジトリにデプロイすることはできません．
+そのような用途にはMavenを使うことを前提とし，
+Mavenで行うには複雑な処理となるオンラインアップデートのみを解決します．
+
+ また，このBlueMoonは実行時にMavenを含むその他のライブラリを必要としません．
+そのため，手作業でライブラリを管理するアプリケーションに対しても
+BlueMoonを適用しやすくなっています．
+
+BlueMoonの動作手順
+
+ [[1]] 設定ファイルからBlueMoonContextオブジェクトを生成する．
+
+ [[1]] BlueMoonContextからダウンロード対象ライブラリ(Dependencies)を取得．
+
+   [[I]] 更新対象ライブラリの最新バージョンを検索する．
+
+   [[I]] もし，リポジトリに更新対象ライブラリが見つからなければ {{{apidocs/com/github/bluemoon/maven/RepositoryItemNotFoundException.html}RepositoryItemNotFoundException}} を投げて更新が失敗する．
+
+ [[2]] Dependenciesの依存関係を解決する．
+
+   [[I]] 全てのDependenciesの依存関係を再帰的に解決する．
+
+   [[I]] もし，依存関係にあるライブラリがリポジトリ内に見つからなければ {{{apidocs/com/github/bluemoon/maven/RepositoryItemNotFoundException.html}RepositoryItemNotFoundException}} を投げて更新が失敗する．
+
+ [[3]] 依存関係ツリー(TREE1)が作成される．
+
+   [[Ii]] もし，依存関係ツリーの中に同じgroupId，artifactIdを持ち，バージョンが異なるものが存在すれば{{{apidocs/com/github/bluemoon/maven/VersionMismatchException.html}VersionMismatchException}}を投げて更新が失敗する．
+
+ [[4]] 依存関係ツリーの中から更新すべきライブラリをダウンロードリストに登録する．その際，updating-policy に従い，以下のような処理を行う．
+
+   [[I]] DESTINATION_CHECK 
+
+     [[i]] TREE1を順番に見て，destination にあるjarファイルと比べ，バージョンが異なるライブラリであれば，新たなバージョンをダウンロードリストに追加する．
+
+   [[I]] REPOSITORY_CHECK
+
+     [[i]] 設定ファイルに書かれているバージョンの依存関係ツリー(TREE2)を作成する．
+
+     [[i]] TREE1とTREE2でバージョンが異なっているものについて，更新リストに登録する．
+
+   [[I]] NO_CHECK
+
+     [[i]] TREE1にあるライブラリを全て更新リストに登録する．
+
+ [[5]] 更新リストに登録されているライブラリでdestinationに存在するライブラリをアンインストールする(拡張子をjarからuninstalledに変更する)．
+
+ [[6]] 更新リストに登録されているライブラリをダウンロードし，destinationに保存する．
+
+ [[7]] BlueMoonContextの更新対象ライブラリのバージョンを更新する．
+
+{Known bugs}
+
+ 既知のバグというかなんというか．
+
+ * ネットワーク経由のアクセスが多く，何度もリモートリポジトリに問い合わせに行く．
+
+  * そういうものです．
+
+ * 更新リストへの登録方法が練りきれていない．
+
+  * その通りです．とりあえず動くものを作るのが今現在の目標です．
+
+ []

@@ -1,0 +1,9 @@
+.classpath
+.djunitplugin
+.project
+.settings
+jcoverage.ser
+target/
+*.class
+*~
+.DS_Store
